@@ -1,0 +1,23 @@
+# Binaries
+tgdev
+*.exe
+
+# Superpowers artifacts
+.superpowers/
+
+# Vendor (if used)
+/vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build output
+/bin/
+/dist/
