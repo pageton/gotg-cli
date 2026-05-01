@@ -29,6 +29,12 @@ Call any TL method, trace API calls with correlation IDs, and expose Telegram as
 ## Install
 
 ```bash
+go install github.com/pageton/gotg-cli/cmd/tgdev@latest
+```
+
+Or build from source:
+
+```bash
 go build -o tgdev ./cmd/tgdev/
 ```
 
@@ -82,18 +88,18 @@ tgdev getme
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `tgdev invoke <method> [json]` | Invoke a TL method via listener or standalone connection |
-| `tgdev listen` | Start persistent client with update stream and IPC server |
-| `tgdev trace` | Full lifecycle tracing with correlation IDs |
-| `tgdev methods [prefix]` | List available TL methods |
-| `tgdev getme` | Get current user/bot info (`users.getFullUser`) |
-| `tgdev export-session` | Export session string from SQLite database |
-| `tgdev mcp` | Start MCP server (stdio or HTTP) |
-| `tgdev completion <shell>` | Generate shell completions (bash, zsh, fish) |
-| `tgdev version` | Print version |
-| `tgdev help` | Show usage |
+| Command                        | Description                                               |
+| ------------------------------ | --------------------------------------------------------- |
+| `tgdev invoke <method> [json]` | Invoke a TL method via listener or standalone connection  |
+| `tgdev listen`                 | Start persistent client with update stream and IPC server |
+| `tgdev trace`                  | Full lifecycle tracing with correlation IDs               |
+| `tgdev methods [prefix]`       | List available TL methods                                 |
+| `tgdev getme`                  | Get current user/bot info (`users.getFullUser`)           |
+| `tgdev export-session`         | Export session string from SQLite database                |
+| `tgdev mcp`                    | Start MCP server (stdio or HTTP)                          |
+| `tgdev completion <shell>`     | Generate shell completions (bash, zsh, fish)              |
+| `tgdev version`                | Print version                                             |
+| `tgdev help`                   | Show usage                                                |
 
 ### Invoke
 
@@ -169,14 +175,14 @@ tgdev mcp --http :8080 --api-id 12345 --api-hash HASH --bot-token TOKEN
 
 ### Available MCP tools
 
-| Tool | Description |
-|------|-------------|
-| `tgdev_list_methods` | List TL methods with prefix filtering and cursor pagination |
-| `tgdev_describe_method` | Show fields, types, and constructor hints for a method |
-| `tgdev_invoke` | Invoke any TL method with JSON params |
-| `tgdev_get_me` | Get current account info |
-| `tgdev_listener_status` | Check if a listener is reachable on the IPC socket |
-| `tgdev_config_info` | Show non-secret MCP configuration |
+| Tool                    | Description                                                 |
+| ----------------------- | ----------------------------------------------------------- |
+| `tgdev_list_methods`    | List TL methods with prefix filtering and cursor pagination |
+| `tgdev_describe_method` | Show fields, types, and constructor hints for a method      |
+| `tgdev_invoke`          | Invoke any TL method with JSON params                       |
+| `tgdev_get_me`          | Get current account info                                    |
+| `tgdev_listener_status` | Check if a listener is reachable on the IPC socket          |
+| `tgdev_config_info`     | Show non-secret MCP configuration                           |
 
 > [!NOTE]
 > When a `tgdev listen` or `tgdev trace` process is running, MCP tools route invocations through the listener's IPC socket. Otherwise, the MCP server uses its own standalone connection.
@@ -189,7 +195,15 @@ tgdev mcp --http :8080 --api-id 12345 --api-hash HASH --bot-token TOKEN
   "mcpServers": {
     "tgdev": {
       "command": "tgdev",
-      "args": ["mcp", "--api-id", "12345", "--api-hash", "HASH", "--bot-token", "TOKEN"]
+      "args": [
+        "mcp",
+        "--api-id",
+        "12345",
+        "--api-hash",
+        "HASH",
+        "--bot-token",
+        "TOKEN"
+      ]
     }
   }
 }
@@ -230,12 +244,12 @@ Config file: `~/.tgdev.json` (auto-restricted to `0600` permissions).
 
 ### Auth methods
 
-| Method | Flag | Notes |
-|--------|------|-------|
-| Bot token | `--bot-token` | Fastest for bots |
-| Phone number | `--phone` | Interactive user login |
-| Session string | `--session` | Telethon/Pyrogram/gotg format |
-| SQLite database | `--db` | Persistent sessions (recommended) |
+| Method          | Flag          | Notes                             |
+| --------------- | ------------- | --------------------------------- |
+| Bot token       | `--bot-token` | Fastest for bots                  |
+| Phone number    | `--phone`     | Interactive user login            |
+| Session string  | `--session`   | Telethon/Pyrogram/gotg format     |
+| SQLite database | `--db`        | Persistent sessions (recommended) |
 
 ### Credential priority
 
@@ -243,13 +257,13 @@ CLI flags > environment variables > config file.
 
 ### Environment variables
 
-| Variable | Maps to |
-|----------|---------|
-| `TGDEV_API_ID` | `--api-id` |
-| `TGDEV_API_HASH` | `--api-hash` |
+| Variable          | Maps to       |
+| ----------------- | ------------- |
+| `TGDEV_API_ID`    | `--api-id`    |
+| `TGDEV_API_HASH`  | `--api-hash`  |
 | `TGDEV_BOT_TOKEN` | `--bot-token` |
-| `TGDEV_SESSION` | `--session` |
-| `TGDEV_PHONE` | `--phone` |
+| `TGDEV_SESSION`   | `--session`   |
+| `TGDEV_PHONE`     | `--phone`     |
 
 > [!IMPORTANT]
 > Prefer environment variables over CLI flags for secrets. CLI args are visible in `ps aux` output.
