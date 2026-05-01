@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -273,6 +274,53 @@ func parseGlobalFlags(args []string) (*config.Config, []string, error) {
 	return cfg, remaining, nil
 }
 
+// detectSessionFormat identifies the session string format and returns
+// the appropriate constructor. Supports auto-detection of gotg, Pyrogram,
+// Telethon, Gramjs, and mtcute string session formats.
+func detectSessionFormat(s string) session.SessionConstructor {
+	// Telethon: starts with '1', URL-safe base64, decodes to exactly 263 or 275 bytes.
+	if len(s) > 1 && s[0] == '1' {
+		rest := s[1:]
+		if decoded, err := base64.URLEncoding.DecodeString(padBase64(rest)); err == nil {
+			switch len(decoded) {
+			case 263, 275:
+				if decoded[0] >= 1 && decoded[0] <= 5 {
+					return session.TelethonSession(s)
+				}
+			}
+		}
+		// Gramjs: starts with '1', standard base64, variable decoded length.
+		return session.GramjsSession(s)
+	}
+
+	// Mtcute: URL-safe base64, first decoded byte is 3 (version).
+	if decoded, err := base64.URLEncoding.DecodeString(padBase64(s)); err == nil && len(decoded) > 0 {
+		if decoded[0] == 3 {
+			return session.MtcuteSession(s)
+		}
+	}
+
+	// Pyrogram: URL-safe base64, no prefix byte, decodes to 271 bytes
+	// (1 DC + 4 appID + 1 testMode + 256 key + 8 userID + 1 isBot).
+	if decoded, err := base64.URLEncoding.DecodeString(padBase64(s)); err == nil {
+		if len(decoded) == 271 && decoded[0] >= 1 && decoded[0] <= 5 {
+			return session.PyrogramSession(s)
+		}
+	}
+
+	// Default: gotg native format (standard base64 JSON).
+	return session.StringSession(s)
+}
+
+// padBase64 adds base64 padding if needed.
+func padBase64(s string) string {
+	s = strings.TrimRight(s, "=")
+	if pad := len(s) % 4; pad != 0 {
+		s += strings.Repeat("=", 4-pad)
+	}
+	return s
+}
+
 // buildSessionConstructor creates the session constructor from config.
 // Priority: --db (SQLite) > --session (string) > in-memory.
 func buildSessionConstructor(cfg *config.Config) (session.SessionConstructor, bool, error) {
@@ -293,7 +341,7 @@ func buildSessionConstructor(cfg *config.Config) (session.SessionConstructor, bo
 	}
 
 	if cfg.Session != "" {
-		return session.StringSession(cfg.Session), false, nil
+		return detectSessionFormat(cfg.Session), false, nil
 	}
 
 	return session.SimpleSession(), true, nil
