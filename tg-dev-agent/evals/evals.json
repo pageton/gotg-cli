@@ -1,0 +1,55 @@
+{
+	"skill_name": "tg-dev-agent",
+	"evals": [
+		{
+			"id": 1,
+			"prompt": "I have a Telegram bot called @storehelper_bot. I need to test its full onboarding flow — when a user sends /start, it should show a language picker with inline buttons, then ask for their name. Can you set up the test environment and walk through the flow?",
+			"expected_output": "Should ask for session_string first, then resolve the bot, set up a test group, and walk through: /start → capture language buttons → click one → capture name prompt. Should test in both DM and group contexts.",
+			"files": [],
+			"expectations": [
+				"Asks for session_string before any other action",
+				"Resolves the bot username via contacts.resolveUsername",
+				"Sets up a test group/supergroup for group-mode testing",
+				"Sends /start to the bot in DM context",
+				"Identifies inline buttons in the bot's response",
+				"Clicks a language button via messages.getBotCallbackAnswer",
+				"Verifies the bot asks for a name after language selection",
+				"Tests the same flow in group context with addressed command",
+				"Provides a summary report with pass/fail for each step"
+			]
+		},
+		{
+			"id": 2,
+			"prompt": "My bot @quizmaster_bot has a /quiz command that sends multiple-choice questions. Each question has 4 answer buttons. When you click wrong answer it should say 'Try again!' and keep the same question. Right answer should advance to next question. There are 5 questions total. Test the full quiz flow and tell me if anything breaks.",
+			"expected_output": "Should test the complete quiz flow: trigger /quiz, capture question+buttons, deliberately click wrong answers, verify retry behavior, then click correct answers through all 5 questions. Should also test edge cases like rapid clicking.",
+			"files": [],
+			"expectations": [
+				"Asks for session_string first",
+				"Sends /quiz command to the bot",
+				"Captures the first question and its 4 answer buttons",
+				"Deliberately clicks a wrong answer and verifies 'Try again!' response",
+				"Clicks the correct answer and verifies next question appears",
+				"Completes all 5 questions in sequence",
+				"Tests rapid button clicking as an edge case",
+				"Reports which questions/answers worked and any failures"
+			]
+		},
+		{
+			"id": 3,
+			"prompt": "I just deployed my bot @referral_bot and it uses deep links for referral tracking. Users open t.me/referral_bot?start=CODE where CODE is a referral code. The bot should greet them with the referrer's name and track the click. I also need you to set up a test group and verify the bot works there too — it should show referral stats when you type /stats in the group.",
+			"expected_output": "Should test deep links with various referral codes, verify greeting message contains referrer info, set up a test group, add the bot, test /stats command in group context, and report on both DM and group behavior.",
+			"files": [],
+			"expectations": [
+				"Asks for session_string first",
+				"Tests deep link with /start CODE in DM",
+				"Tests with valid referral code",
+				"Tests with invalid/empty referral code as edge case",
+				"Creates or finds a test supergroup",
+				"Adds the bot to the group",
+				"Promotes the bot to admin (or asks user if it fails)",
+				"Tests /stats command in the group",
+				"Compares DM vs group behavior in the report"
+			]
+		}
+	]
+}
