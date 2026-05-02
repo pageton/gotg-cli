@@ -1,0 +1,7 @@
+{
+  "name": "gotg-cli-skills",
+  "description": "Telegram bot development and testing skills using tgdev/gotg",
+  "skills": [
+    "tg-dev-agent/SKILL.md"
+  ]
+}
